@@ -1,0 +1,22 @@
+# OS / tooling
+.DS_Store
+node_modules/
+.vercel/
+.claude/
+
+# Raw source material (root only) — the finished site uses /assets
+/Images/
+/1.1/
+/gallery all/
+/occasion hats/
+/everyday/
+/accessories/
+/Screenshot*.png
+/Logo.png
+/our story image .png
+/occassion.PNG
+/gallery image.png
+/lol.png
+/visit us.png
+/hero video.mp4
+/hero vid.mp4

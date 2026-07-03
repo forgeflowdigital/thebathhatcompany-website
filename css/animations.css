@@ -1,0 +1,118 @@
+/* ==========================================================================
+   Scroll-driven reveal — fires entering AND re-entering the viewport (both
+   directions), GPU-accelerated (transform + opacity only), staggered.
+   ========================================================================== */
+[data-reveal] {
+  opacity: 0;
+  transition:
+    opacity 780ms var(--ease-out),
+    transform 780ms var(--ease-out),
+    filter 780ms var(--ease-out);
+  transition-delay: calc(var(--stagger, 0) * 90ms);
+  will-change: transform, opacity;
+}
+[data-reveal="up"]    { transform: translateY(38px); }
+[data-reveal="down"]  { transform: translateY(-34px); }
+[data-reveal="left"]  { transform: translateX(-44px); }
+[data-reveal="right"] { transform: translateX(44px); }
+[data-reveal="scale"] { transform: scale(0.92); }
+[data-reveal="blur"]  { filter: blur(12px); transform: translateY(18px); }
+[data-reveal].is-visible { opacity: 1; transform: translate(0,0) scale(1); filter: blur(0); }
+
+[data-parallax] { will-change: transform; }
+
+[data-counter] { font-variant-numeric: tabular-nums; }
+
+/* Scroll progress bar */
+#scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--pink), var(--pink-deep));
+  z-index: 900; transition: width 80ms linear;
+}
+
+/* Cursor-follow glow */
+.glow-surface { position: relative; overflow: hidden; }
+.glow-surface::before {
+  content: ""; position: absolute;
+  left: var(--mx, 50%); top: var(--my, 50%);
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(242,214,208,0.4), transparent 70%);
+  transform: translate(-50%, -50%); opacity: 0;
+  transition: opacity 320ms var(--ease); pointer-events: none;
+}
+.glow-surface:hover::before { opacity: 1; }
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .float-card { animation: none !important; }
+}
+
+/* ==========================================================================
+   Hat Chatbot Widget — "Ask the Milliner"
+   ========================================================================== */
+#hat-chat-launcher {
+  position: fixed;
+  right: clamp(1.1rem, 3vw, 2.2rem);
+  bottom: clamp(1.1rem, 3vw, 2.2rem);
+  z-index: 950;
+  width: 66px; height: 66px; border-radius: 50%;
+  background: var(--pink);
+  box-shadow: 0 16px 34px -14px rgba(43,42,48,0.5);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 320ms var(--ease-out), box-shadow 320ms var(--ease-out);
+  animation: chat-float 4.5s ease-in-out infinite;
+}
+#hat-chat-launcher:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 22px 44px -14px rgba(43,42,48,0.55); }
+#hat-chat-launcher svg { width: 34px; height: 34px; }
+#hat-chat-launcher .ping { position: absolute; top: -3px; right: -3px; width: 14px; height: 14px; border-radius: 50%; background: var(--ink); border: 2px solid var(--offwhite); }
+#hat-chat-launcher .ping::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--ink); animation: ping 2.2s ease-out infinite; }
+@keyframes ping { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes chat-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+#hat-chat-panel {
+  position: fixed; right: clamp(1rem, 3vw, 2.2rem); bottom: clamp(5.4rem, 12vw, 7rem);
+  z-index: 960; width: min(380px, 90vw); max-height: min(560px, 72vh);
+  background: var(--offwhite); border-radius: 18px; overflow: hidden;
+  box-shadow: 0 40px 80px -24px rgba(43,42,48,0.4);
+  display: flex; flex-direction: column;
+  transform-origin: bottom right; opacity: 0; transform: scale(0.92) translateY(16px);
+  pointer-events: none; transition: opacity 260ms var(--ease-out), transform 320ms var(--ease-out);
+}
+#hat-chat-panel.is-open { opacity: 1; transform: scale(1) translateY(0); pointer-events: all; }
+.hat-chat-head { background: var(--pink); color: var(--ink); padding: 1.1rem 1.3rem; display: flex; align-items: center; gap: 0.8rem; }
+.hat-chat-head .hat-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--offwhite); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.hat-chat-head .hat-avatar svg { width: 24px; height: 24px; }
+.hat-chat-head strong { display: block; font-family: var(--font-display); font-size: 1.05rem; }
+.hat-chat-head span { font-size: 0.74rem; color: var(--ink-soft); }
+.hat-chat-close { margin-left: auto; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background-color 220ms var(--ease); }
+.hat-chat-close:hover { background: rgba(43,42,48,0.1); }
+.hat-chat-body { flex: 1; overflow-y: auto; padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.8rem; background: var(--pink-wash); }
+.hat-msg { max-width: 86%; padding: 0.7em 0.95em; border-radius: 14px; font-size: 0.88rem; line-height: 1.5; opacity: 0; transform: translateY(8px); animation: msg-in 320ms var(--ease-out) forwards; }
+@keyframes msg-in { to { opacity: 1; transform: translateY(0); } }
+.hat-msg.bot { background: var(--offwhite); border: 1px solid var(--line-soft); align-self: flex-start; border-bottom-left-radius: 4px; }
+.hat-msg.user { background: var(--pink); color: var(--ink); align-self: flex-end; border-bottom-right-radius: 4px; }
+.hat-msg a { text-decoration: underline; }
+.hat-typing { display: inline-flex; gap: 4px; align-self: flex-start; padding: 0.8em 1em; background: var(--offwhite); border: 1px solid var(--line-soft); border-radius: 14px; border-bottom-left-radius: 4px; }
+.hat-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-soft); animation: typing 1.1s infinite ease-in-out; }
+.hat-typing span:nth-child(2) { animation-delay: 0.15s; }
+.hat-typing span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typing { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
+.hat-chat-suggestions { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.2rem 0.9rem; background: var(--pink-wash); }
+.hat-chip { font-size: 0.74rem; padding: 0.45em 0.9em; border: 1px solid var(--line); border-radius: 30px; background: var(--offwhite); transition: background-color 220ms var(--ease), transform 220ms var(--ease), border-color 220ms var(--ease); }
+.hat-chip:hover { background: var(--pink); border-color: var(--pink); transform: translateY(-2px); }
+.hat-chat-form { display: flex; gap: 0.6rem; padding: 0.9rem; border-top: 1px solid var(--line-soft); background: var(--offwhite); }
+.hat-chat-form input { flex: 1; border: 1.5px solid var(--line); border-radius: 30px; padding: 0.7em 1.1em; font-size: 0.88rem; transition: border-color 220ms var(--ease); }
+.hat-chat-form input:focus { outline: none; border-color: var(--pink-deep); }
+.hat-chat-form button { width: 42px; height: 42px; border-radius: 50%; background: var(--pink); color: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background-color 220ms var(--ease), transform 220ms var(--ease); }
+.hat-chat-form button:hover { background: var(--pink-deep); transform: scale(1.05); }
+.hat-chat-form button svg { width: 18px; height: 18px; }
+@media (max-width: 480px) { #hat-chat-panel { right: 0.7rem; left: 0.7rem; width: auto; bottom: 5.6rem; } }
