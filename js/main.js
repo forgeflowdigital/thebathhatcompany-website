@@ -4,6 +4,39 @@
   "use strict";
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* ---------------- Force autoplay on mobile (no play-button fallback) ----------------
+     Some mobile browsers silently fail the declarative autoplay attribute and
+     show a native play button instead. Explicitly muting + calling .play() and
+     retrying on the first touch/scroll removes that fallback UI entirely. */
+  var bgVideos = Array.prototype.slice.call(document.querySelectorAll("video[autoplay]"));
+  if (bgVideos.length) {
+    var tryPlay = function () {
+      bgVideos.forEach(function (v) {
+        v.muted = true;
+        v.defaultMuted = true;
+        v.setAttribute("muted", "");
+        var p = v.play();
+        if (p && typeof p.catch === "function") p.catch(function () { /* retried on interaction below */ });
+      });
+    };
+    tryPlay();
+    document.addEventListener("DOMContentLoaded", tryPlay);
+    window.addEventListener("pageshow", tryPlay);
+    ["touchstart", "click", "scroll"].forEach(function (evt) {
+      document.addEventListener(evt, tryPlay, { once: true, passive: true });
+    });
+    bgVideos.forEach(function (v) {
+      v.addEventListener("loadedmetadata", tryPlay);
+      v.addEventListener("canplay", tryPlay);
+      v.addEventListener("pause", function () {
+        if (!document.hidden) v.play().catch(function () {});
+      });
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) tryPlay();
+    });
+  }
+
   /* ---------------- Header ---------------- */
   var header = document.querySelector(".site-header");
   var lastY = window.scrollY, ticking = false;
