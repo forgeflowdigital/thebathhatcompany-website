@@ -37,6 +37,18 @@
     });
   }
 
+  /* ---------------- Reveal video once genuinely playing (video-frame) ----------------
+     The <video> stays invisible (see CSS) until it reports real playback, so an
+     unstarted video is never on screen for the OS to draw its own "tap to play"
+     button over (this is what iOS Low Power Mode was doing — undetectable and
+     unfixable via CSS alone once that native overlay renders). Visitors just see
+     the static photo until playback truly begins, then it crossfades in and loops. */
+  document.querySelectorAll(".video-frame").forEach(function (frame) {
+    var v = frame.querySelector("video");
+    if (!v) return;
+    v.addEventListener("playing", function () { frame.classList.add("is-playing"); });
+  });
+
   /* ---------------- Header ---------------- */
   var header = document.querySelector(".site-header");
   var lastY = window.scrollY, ticking = false;
