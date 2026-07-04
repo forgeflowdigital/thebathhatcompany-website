@@ -303,6 +303,24 @@ body.menu-open .nav-toggle span { background: var(--ink); }
   object-fit: cover;
   object-position: center 40%;
 }
+
+/* Background/looping videos: never show native controls or the mobile
+   "tap to play" glyph that browsers render over a video they've paused —
+   our JS force-plays them, this just stops that button ever being visible. */
+.hero-media video,
+.split-media > video,
+.fit-video > video {
+  pointer-events: none;
+}
+.hero-media video::-webkit-media-controls,
+.split-media > video::-webkit-media-controls,
+.fit-video > video::-webkit-media-controls,
+.hero-media video::-webkit-media-controls-start-playback-button,
+.split-media > video::-webkit-media-controls-start-playback-button,
+.fit-video > video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
 .hero-media::after {
   content: "";
   position: absolute; inset: 0;

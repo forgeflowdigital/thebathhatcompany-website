@@ -22,7 +22,7 @@
     tryPlay();
     document.addEventListener("DOMContentLoaded", tryPlay);
     window.addEventListener("pageshow", tryPlay);
-    ["touchstart", "click", "scroll"].forEach(function (evt) {
+    ["touchstart", "pointerdown", "click", "scroll", "keydown"].forEach(function (evt) {
       document.addEventListener(evt, tryPlay, { once: true, passive: true });
     });
     bgVideos.forEach(function (v) {
