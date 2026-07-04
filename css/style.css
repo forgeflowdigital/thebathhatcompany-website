@@ -313,7 +313,10 @@ body.menu-open .nav-toggle span { background: var(--ink); }
    website to detect or override it. Visitors just see the still photo
    until playback truly begins, then it loops forever with no button.
    ========================================================================== */
-.video-frame { position: relative; }
+/* No position rule here deliberately — .hero-media already needs position:
+   absolute to fill its parent, while .split-media/.fit-video already set
+   position: relative themselves. Setting it again here at equal specificity
+   risked winning the cascade tie and silently overriding .hero-media's. */
 .video-frame video,
 .video-frame .video-frame-poster {
   position: absolute; inset: 0;
